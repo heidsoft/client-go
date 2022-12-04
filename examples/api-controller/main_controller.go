@@ -19,12 +19,14 @@ package main
 import (
 	"flag"
 	"fmt"
+	"k8s.io/client-go/util/homedir"
+	"path/filepath"
 	"time"
 
 	"k8s.io/klog/v2"
 
 	v1 "k8s.io/api/core/v1"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	meta_v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/fields"
 	"k8s.io/apimachinery/pkg/util/runtime"
 	"k8s.io/apimachinery/pkg/util/wait"
@@ -145,15 +147,20 @@ func (c *Controller) runWorker() {
 }
 
 func main() {
-	var kubeconfig string
-	var master string
-
-	flag.StringVar(&kubeconfig, "kubeconfig", "", "absolute path to the kubeconfig file")
-	flag.StringVar(&master, "master", "", "master url")
+	var master *string
+	var kubeconfig *string
+	if home := homedir.HomeDir(); home != "" {
+		kubeconfig = flag.String("kubeconfig", filepath.Join(home, ".kube", "config"), "(optional) absolute path to the kubeconfig file")
+	} else {
+		kubeconfig = flag.String("kubeconfig", "", "absolute path to the kubeconfig file")
+	}
+	master = flag.String("master", "https://kubernetes.docker.internal:6443", "master url")
+	fmt.Printf("master-url %s", *master)
+	fmt.Printf("kubeconfig  %s", *kubeconfig)
 	flag.Parse()
 
 	// creates the connection
-	config, err := clientcmd.BuildConfigFromFlags(master, kubeconfig)
+	config, err := clientcmd.BuildConfigFromFlags(*master, *kubeconfig)
 	if err != nil {
 		klog.Fatal(err)
 	}
@@ -204,8 +211,8 @@ func main() {
 	// If this pod is not there anymore, the controller will be notified about the removal after the
 	// cache has synchronized.
 	indexer.Add(&v1.Pod{
-		ObjectMeta: metav1.ObjectMeta{
-			Name:      "demo-deployment-85bf8d8f96-kgjxw",
+		ObjectMeta: meta_v1.ObjectMeta{
+			Name:      "mypod",
 			Namespace: v1.NamespaceDefault,
 		},
 	})

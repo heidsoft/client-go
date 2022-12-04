@@ -140,27 +140,6 @@ func main() {
 	}
 	fmt.Println("Updated deployment...")
 
-	// List Deployments
-	//prompt()
-	//fmt.Printf("Listing deployments in namespace %q:\n", apiv1.NamespaceDefault)
-	//list, err := deploymentsClient.List(context.TODO(), metav1.ListOptions{})
-	//if err != nil {
-	//	panic(err)
-	//}
-	//for _, d := range list.Items {
-	//	fmt.Printf(" * %s (%d replicas)\n", d.Name, *d.Spec.Replicas)
-	//}
-
-	// Delete Deployment
-	//prompt()
-	//fmt.Println("Deleting deployment...")
-	//deletePolicy := metav1.DeletePropagationForeground
-	//if err := deploymentsClient.Delete(context.TODO(), "demo-deployment", metav1.DeleteOptions{
-	//	PropagationPolicy: &deletePolicy,
-	//}); err != nil {
-	//	panic(err)
-	//}
-	//fmt.Println("Deleted deployment.")
 }
 
 func prompt() {
